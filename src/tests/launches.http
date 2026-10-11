@@ -3,13 +3,13 @@
 ###
 # @name postALaunch
 
-POST {{endpoint}} HTTP/1.1
+POST {{endpoint}} HTTP/3.0
 content-type: application/json
 x-api-key: blahblah
 
 {
-  "missionName": "Test Mission",
-  "rocketName": "Test Rocket"
+  "missionName": "Apollo 7",
+  "rocketName": "Rocket Man"
 }
 
 
@@ -17,9 +17,14 @@ x-api-key: blahblah
 @newLaunch = {{postALaunch.response.body._id}}
 
 ###
-GET  {{endpoint}}/{{newLaunch}} HTTP/3.0
+POST {{endpoint}} HTTP/3.0
 content-type: application/json
 x-api-key: blahblah
+
+{
+  "missionName": "Test Mission",
+  "rocketName": ""
+}
 
 ###
 GET  {{endpoint}} HTTP/3.0
@@ -27,19 +32,43 @@ content-type: application/json
 x-api-key: blahblah
 
 ###
-GET  {{endpoint}}/6acbc5343bd68c8e04b86652 HTTP/3.0
+GET  {{endpoint}}/6acbdc2763e1dc7efa7d9dc4
+content-type: application/json
+x-api-key: blahblah
+
+
+###
+GET  {{endpoint}}/123 HTTP/3.0
 content-type: application/json
 
 
 ###
 
-DELETE  {{endpoint}}/6acbc7013bd68c8e04b86654 HTTP/3.0
+DELETE  {{endpoint}}/6acbdc2763e1dc7efa7d9dc4
 content-type: application/json
 x-api-key: blahblah
 
 ###
 
-PUT  {{endpoint}}/6acbc5343bd68c8e04b86652 HTTP/3.0
+DELETE  {{endpoint}}/123 HTTP/3.0
+content-type: application/json
+x-api-key: blahblah
+
+###
+
+PUT  {{endpoint}}/6acbc50f3bd68c8e04b8664f
+content-type: application/json
+x-api-key: blahblah
+
+{
+  "missionName" : "Howdy",
+  "rocketName" : "New Shepard",
+  "notes" : "Suborbital research mission"
+}
+
+###
+
+PUT  {{endpoint}}/123 HTTP/3.0
 content-type: application/json
 x-api-key: blahblah
 
@@ -50,7 +79,19 @@ x-api-key: blahblah
 }
 
 ###
-PUT {{endpoint}}/{{newLaunch}}/favorite HTTP/3.0
+
+PUT  {{endpoint}}/6acbc50f3bd68c8e04b8664f HTTP/3.0
+content-type: application/json
+x-api-key: blahblah
+
+{
+  "missionName" : "",
+  "rocketName" : "New Shepard",
+  "notes" : "Suborbital research mission"
+}
+
+###
+PUT {{endpoint}}/6acb96d51bcc2eb723fa9497
 content-type: application/json
 
 {
