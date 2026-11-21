@@ -13,6 +13,6 @@ router.get('/:id', launchController.getLaunchById);
 router.post('/', validate(createLaunchZSchema), launchController.createLaunch);
 router.put('/:id', validate(updateLaunchZSchema), launchController.updateLaunch);
 router.delete('/:id', launchController.deleteLaunch);
-router.put('/:id/favorite', validate(favoriteLaunchZSchema),launchController.setFavorite);
+router.patch('/:id/favorite', validate(favoriteLaunchZSchema),launchController.setFavorite);
 
 export default router;

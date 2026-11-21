@@ -1,100 +1,40 @@
 @endpoint = http://localhost:3000/api/v1/launches
+@missionName = Apollo 7
+@rocketName = Rocket Man
 
 ###
-# @name postALaunch
-
-POST {{endpoint}} HTTP/3.0
-content-type: application/json
-x-api-key: blahblah
-
-{
-  "missionName": "Apollo 7",
-  "rocketName": "Rocket Man"
-}
-
-
-###
-@newLaunch = {{postALaunch.response.body._id}}
-
-###
-POST {{endpoint}} HTTP/3.0
-content-type: application/json
-x-api-key: blahblah
-
-{
-  "missionName": "Test Mission",
-  "rocketName": ""
-}
-
-###
-GET  {{endpoint}} HTTP/3.0
-content-type: application/json
-x-api-key: blahblah
-
-###
-GET  {{endpoint}}/6acbdc2763e1dc7efa7d9dc4
-content-type: application/json
-x-api-key: blahblah
-
-
-###
-GET  {{endpoint}}/123 HTTP/3.0
-content-type: application/json
-
-
-###
-
-DELETE  {{endpoint}}/6acbdc2763e1dc7efa7d9dc4
-content-type: application/json
-x-api-key: blahblah
-
-###
-
-DELETE  {{endpoint}}/123 HTTP/3.0
-content-type: application/json
-x-api-key: blahblah
-
-###
-
-PUT  {{endpoint}}/6acbc50f3bd68c8e04b8664f
-content-type: application/json
-x-api-key: blahblah
-
-{
-  "missionName" : "Howdy",
-  "rocketName" : "New Shepard",
-  "notes" : "Suborbital research mission"
-}
-
-###
-
-PUT  {{endpoint}}/123 HTTP/3.0
-content-type: application/json
-x-api-key: blahblah
-
-{
-  "missionName" : "New Shepard NS-25",
-  "rocketName" : "New Shepard",
-  "notes" : "Suborbital research mission"
-}
-
-###
-
-PUT  {{endpoint}}/6acbc50f3bd68c8e04b8664f HTTP/3.0
-content-type: application/json
-x-api-key: blahblah
-
-{
-  "missionName" : "",
-  "rocketName" : "New Shepard",
-  "notes" : "Suborbital research mission"
-}
-
-###
-PUT {{endpoint}}/6acb96d51bcc2eb723fa9497
+# @name createLaunch
+POST {{endpoint}}
 content-type: application/json
 
 {
-  "favorite": false
+  "missionName": "{{missionName}}",
+  "rocketName": "{{rocketName}}"
 }
 
+###
+@newLaunch = {{createLaunch.response.body._id}}
+
+###
+GET {{endpoint}}/{{newLaunch}}
+
+###
+PUT {{endpoint}}/{{newLaunch}}
+content-type: application/json
+
+{
+  "missionName": "{{missionName}} - Updated",
+  "rocketName": "{{rocketName}}",
+  "notes": "Suborbital research mission"
+}
+
+###
+PATCH {{endpoint}}/{{newLaunch}}/favorite
+content-type: application/json
+
+{
+  "favorite": true
+}
+
+###
+DELETE {{endpoint}}/{{newLaunch}}
