@@ -1,5 +1,6 @@
 import { LaunchModel, ILaunch } from '../models/launches';
 import { HydratedDocument } from 'mongoose';
+import { NotFoundError } from '../apperrors/notfounderror';
 
 export class LaunchService {
 
@@ -8,7 +9,12 @@ export class LaunchService {
   }
 
   async getLaunchById(id: string): Promise<ILaunch | null> {
-    return await LaunchModel.findById(id).lean();
+    const launch = await LaunchModel.findById(id).lean();
+    if(!launch){
+      throw new NotFoundError('Launch');
+    }
+
+    return launch;
   }
 
   async createLaunch(launchData: ILaunch): Promise<HydratedDocument<ILaunch>> {
@@ -17,10 +23,20 @@ export class LaunchService {
   }
 
   async updateLaunch(id: string, launchData: Partial<ILaunch>): Promise<ILaunch | null> {
+    const launch = await LaunchModel.findById(id).lean();
+    if(!launch){
+      throw new NotFoundError('Launch');
+    }
+
     return await LaunchModel.findByIdAndUpdate(id, launchData, { returnDocument: 'after' }).lean();
   }
 
   async deleteLaunch(id: string): Promise<ILaunch | null> {
+    const launch = await LaunchModel.findById(id).lean();
+    if (!launch){
+      throw new NotFoundError('Launch');
+    }
+    
     return await LaunchModel.findByIdAndDelete(id).lean();
   }
 

@@ -173,29 +173,38 @@ export const launchSchema = new Schema<ILaunch>(
  */
 
 export const createLaunchZSchema = z.object({
-  missionName: z.string().min(1),
-  rocketName: z.string().min(1),
-  date: z
-    .string()
-    .datetime()
-    .optional(),
-  favorite: z.boolean().optional(),
-  notes: z.string().max(100).optional()
+  body: z.object({
+    missionName: z.string().min(1),
+    rocketName: z.string().min(1),
+    date: z.string().datetime().optional(),
+    favorite: z.boolean().optional(),
+    notes: z.string().max(100).optional(),
+  }),
 });
 
 export const updateLaunchZSchema = z.object({
-  missionName: z.string().min(1),
-  rocketName: z.string().min(1),
-  date: z
+  body: z.object({
+    missionName: z.string().min(1),
+    rocketName: z.string().min(1),
+    date: z
     .string()
     .datetime()
     .optional(),
-  favorite: z.boolean().optional(),
-  notes: z.string().max(100).optional()
+   favorite: z.boolean().optional(),
+   notes: z.string().max(100).optional()
+  }),
 });
 
 export const favoriteLaunchZSchema = z.object({
-  favorite: z.boolean()
+  body: z.object({
+    favorite: z.boolean(),
+  }),
+});
+
+export const launchParamsSchema = z.object({
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid ObjectId')
+  })
 });
 
 export const LaunchModel = model<ILaunch>('Launch', launchSchema);

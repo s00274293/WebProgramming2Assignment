@@ -38,6 +38,7 @@ export class LaunchController {
   }
 };
 
+
 /**
  * @openapi
  * /launches/{id}:
@@ -74,19 +75,9 @@ export class LaunchController {
  *               $ref: '#/components/schemas/ServerErrorResponse'
  */
   getLaunchById = async (req: Request, res: Response): Promise<void> => {
-  try {
     const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
     const launch = await launchService.getLaunchById(id);
-
-    if (!launch) {
-      res.status(404).json({ message: 'Launch not found' });
-      return;
-    }
-
     res.status(200).json(launch);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching launch', error });
-  }
 };
 
 
@@ -124,16 +115,6 @@ export class LaunchController {
  *               $ref: '#/components/schemas/ServerErrorResponse'
  */
   createLaunch = async (req: Request, res: Response): Promise<void> => {
-    const validation = createLaunchZSchema.safeParse(req.body);
-
-      console.log
-
-      if (!validation.success) {
-        res.status(400).json({ message: 'Invalid launch data', errors: validation.error.issues });
-        return;
-      }
-
-
   try {
     const newLaunch = await launchService.createLaunch(req.body);
     res.status(201).json(newLaunch);
@@ -190,19 +171,9 @@ export class LaunchController {
  *               $ref: '#/components/schemas/ServerErrorResponse'
  */
   updateLaunch = async (req: Request, res: Response): Promise<void> => {
-  try {
     const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
     const updatedLaunch = await launchService.updateLaunch(id, req.body);
-
-    if (!updatedLaunch) {
-      res.status(404).json({ message: 'Launch not found' });
-      return;
-    }
-
     res.status(200).json(updatedLaunch);
-  } catch (error) {
-    res.status(500).json({ message: 'Error updating launch', error });
-  }
 };
 
 
@@ -242,22 +213,14 @@ export class LaunchController {
 *               $ref: '#/components/schemas/ServerErrorResponse'
 */
   deleteLaunch = async (_req: Request, res: Response): Promise<void> => {
-  try {
     const id = Array.isArray(_req.params.id) ? _req.params.id[0] : _req.params.id;
-    const deletingLaunch = await launchService.deleteLaunch(id);
-
-    if (!deletingLaunch) {
-      res.status(404).json({ message: 'Launch not found' });
-      return;
-    }
-
+    await launchService.deleteLaunch(id);
+    
     res.status(200).json({
       success: true,
       data: `Launch with id ${_req.params.id} deleted successfully`
     });
-  } catch (error) {
-    res.status(500).json({ message: 'Error deleting launch', error });
-  }
+
 };
 
 getUpcomingLaunches = async (_req: Request, res: Response): Promise<void> => {
@@ -270,22 +233,15 @@ getUpcomingLaunches = async (_req: Request, res: Response): Promise<void> => {
 };
 
 setFavorite = async (req: Request, res: Response): Promise<void> => {
-  try {
     const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
     const updatedLaunch = await launchService.setFavorite( id, req.body.favorite );
 
-    if (!updatedLaunch) {
-      res.status(404).json({ message: 'Launch not found' });
-      return;
-    }
 
-    res.status(200).json(updatedLaunch);
-  } catch (error) {
-    res.status(500).json({
-      message: 'Error updating favorite status',
-      error
+    res.status(200).json({
+      success: true,
+      data: `Launch with id ${req.params.id} favorite status updated`
     });
   }
+  
 };
 
-}

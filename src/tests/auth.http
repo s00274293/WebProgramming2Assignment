@@ -1,0 +1,109 @@
+@endpoint = http://localhost:3000/api/v1/auth/register
+@endpoint2 = http://localhost:3000/api/v1/auth/login
+
+### Register a valid user 
+### then Register same email again
+POST {{endpoint}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Kevin",
+  "email": "kevin@example.com",
+  "password": "Password123"
+}
+
+### Invalid email
+POST {{endpoint}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Kevin",
+  "email": "not-an-email",
+  "password": "Password123"
+}
+
+### Missing password
+POST {{endpoint}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Kevin",
+  "email": "missing-password@example.com"
+}
+
+### Password shorter than six characters
+POST {{endpoint}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Kevin",
+  "email": "short-password@example.com",
+  "password": "12345"
+}
+
+### Password longer than 64 characters
+POST {{endpoint}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Kevin",
+  "email": "long-password@example.com",
+  "password": "1234567890123456789012345678901234567890123456789012345678901234567890"
+}
+
+
+
+
+
+### Successful login
+POST {{endpoint2}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "kevin@example.com",
+  "password": "Password123"
+}
+
+### Unknown email
+POST {{endpoint2}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "unknown@example.com",
+  "password": "Password123"
+}
+
+### Incorrect Password
+POST {{endpoint2}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "kevin@example.com",
+  "password": "WrongPassword"
+}
+
+### Missing Password
+POST {{endpoint2}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "kevin@example.com"
+}
+
+### Empty password
+POST {{endpoint2}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "kevin@example.com",
+  "password": ""
+}
+
+### Invalid email format
+POST {{endpoint2}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "not-an-email",
+  "password": "Password123"
+}

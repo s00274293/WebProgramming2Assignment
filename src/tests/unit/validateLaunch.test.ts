@@ -1,4 +1,14 @@
-import { createLaunchZSchema } from "../../models/launches";
+import { createLaunchZSchema, updateLaunchZSchema, favoriteLaunchZSchema } from "../../models/launches";
+
+//to handle schema changes wrapping fields in body
+const parseCreate = (body: unknown) =>
+    createLaunchZSchema.safeParse({ body });
+
+const parseUpdate = (body: unknown) =>
+    updateLaunchZSchema.safeParse({ body });
+
+const parseFavorite = (body: unknown) =>
+    favoriteLaunchZSchema.safeParse({ body });
 
 const validLaunch = {
   missionName: "Test",
@@ -8,67 +18,90 @@ const validLaunch = {
   notes: "Test"
 };
 
-describe('Test Launch Validation', () => {
-    it('accepts a valid launch with all fields', () => {
-        expect(() => createLaunchZSchema.parse(validLaunch)).not.toThrow();
+describe("create launch validation", () => {
+    it("accepts a valid launch with all fields", () => {
+        expect(parseCreate(validLaunch).success).toBe(true);
     });
 
-    it('accepts a launch with only the required fields', () => {
-        const launch = {
-            missionName: 'Test mission',
-            rocketName: 'Test rocket'
-        };
-
-        expect(() => createLaunchZSchema.parse(launch)).not.toThrow();
+    it("accepts a launch with only required fields", () => {
+        expect(
+            parseCreate({
+                missionName: "Test Mission",
+                rocketName: "Test Rocket",
+            }).success,
+        ).toBe(true);
     });
 
-    it('rejects a launch missing missionName', () => {
-        expect(() => createLaunchZSchema.parse({ rocketName: 'Test rocket' })).toThrow();
+    it("rejects a missing mission name", () => {
+        const result = parseCreate({ rocketName: "Test Rocket" });
+
+        expect(result.success).toBe(false);
+        if (!result.success) {
+            expect(result.error.issues).toContainEqual(
+                expect.objectContaining({ path: ["body", "missionName"] }),
+            );
+        }
     });
 
-    it('rejects a launch missing rocketName', () => {
-        expect(() => createLaunchZSchema.parse({ missionName: 'Test mission' })).toThrow();
+    it("rejects a missing rocket name", () => {
+        expect(parseCreate({ missionName: "Test Mission" }).success).toBe(false);
     });
 
-    it('rejects a launch with only empty strings in required fields', () => {
-        const launch = {
-            missionName: '',
-            rocketName: 'Test rocket'
-        };
-
-        expect(() => createLaunchZSchema.parse(launch)).toThrow();
+    it("rejects empty required names", () => {
+        expect(
+            parseCreate({ missionName: "", rocketName: "Test Rocket" }).success,
+        ).toBe(false);
+        expect(
+            parseCreate({ missionName: "Test Mission", rocketName: "" }).success,
+        ).toBe(false);
     });
 
-    it('rejects a launch when the date is not a valid datetime', () => {
-        const launch = {
-            missionName: "Test mission",
-            rocketName: "Test rocket",
-            date: "not-a-real-date"
-        };
-
-        expect(() => createLaunchZSchema.parse(launch)).toThrow();
-    });
-    
-
-    it('accepts notes at the 100-character limit', () => {
-        const launch = { ...validLaunch, notes: 'a'.repeat(100) };
-
-        expect(() => createLaunchZSchema.parse(launch)).not.toThrow();
+    it("rejects an invalid date", () => {
+        expect(
+            parseCreate({ ...validLaunch, date: "not-a-date" }).success,
+        ).toBe(false);
     });
 
-    it('rejects notes longer than 100 characters', () => {
-        const launch = { ...validLaunch, notes: 'a'.repeat(101) };
-
-        expect(() => createLaunchZSchema.parse(launch)).toThrow();
+    it("accepts notes at the 100-character limit", () => {
+        expect(parseCreate({ ...validLaunch, notes: "a".repeat(100) }).success)
+            .toBe(true);
     });
 
-    it('rejects invalid type for favorite', () => {
-        const invalidFavorite = { ...validLaunch, favorite: 'false'};
-        expect(() => createLaunchZSchema.parse(invalidFavorite)).toThrow();
+    it("rejects notes longer than 100 characters", () => {
+        expect(parseCreate({ ...validLaunch, notes: "a".repeat(101) }).success)
+            .toBe(false);
     });
-    
-    it('rejects invalid type for notes', () => {
-        const invalidNotes = {...validLaunch, notes: 123};
-        expect(() => createLaunchZSchema.parse(invalidNotes)).toThrow();
+
+    it("rejects a non-boolean favorite value", () => {
+        expect(parseCreate({ ...validLaunch, favorite: "false" }).success)
+            .toBe(false);
+    });
+
+    it("rejects a non-string notes value", () => {
+        expect(parseCreate({ ...validLaunch, notes: 123 }).success).toBe(false);
+    });
+});
+
+describe("update launch validation", () => {
+    it("accepts a valid update", () => {
+        expect(parseUpdate(validLaunch).success).toBe(true);
+    });
+
+    it("rejects an update missing a required name", () => {
+        expect(parseUpdate({ missionName: "Test Mission" }).success).toBe(false);
+    });
+});
+
+describe("favorite launch validation", () => {
+    it.each([true, false])("accepts favorite=%s", (favorite) => {
+        expect(parseFavorite({ favorite }).success).toBe(true);
+    });
+
+    it("rejects a non-boolean favorite value", () => {
+        expect(parseFavorite({ favorite: "yes" }).success).toBe(false);
+    });
+
+    it("rejects a missing favorite value", () => {
+        expect(parseFavorite({}).success).toBe(false);
     });
 });
